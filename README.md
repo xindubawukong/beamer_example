@@ -1,1 +1,1 @@
-A beamer example for presentation.
+A beamer template for presentation.
