@@ -3,7 +3,11 @@
 \usepackage{xeCJK}
 \usepackage{listings}
 \usepackage{xcolor}
-\usepackage[ruled,linesnumbered]{algorithm2e}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{float}
+\usepackage{amsmath,amsfonts,amsthm,bm} % Math packages
+\usepackage{multirow}
 
 \definecolor{mygreen}{rgb}{0,0.6,0}
 \definecolor{mygray}{rgb}{0.5,0.5,0.5}
@@ -31,7 +35,7 @@
 \title{Hello World}
 \subtitle[short subtitle]{long subtitle}
 \author[dxy]{Xiangyun Ding}
-\institute{Tsinghua University}
+\institute[计65]{\large{姓名：丁相允}\and\large{哈哈哈哈}}
 \date{March 1, 2020}  % \date{\today}
 
 % \small \tiny \large \huge 以及大写的
@@ -104,32 +108,29 @@ An itemized list:
 
 \section{section2}
 
-\begin{frame}{fff}
-  \begin{table}
-    \centering
-    \caption{table decription}
-    \label{t_sim}
-    \begin{tabular}{|l|l|}
-    \hline
-    \textbf{Key} & \textbf{Value} \\
-    \hline
-    $x$ & description of x \\
-    $y$ & description of y \\
-    $y$ & description of z \\
-    \hline
-    \end{tabular}
-    \end{table}
+\begin{frame}{表格}
 
-    \begin{table}[tb]
-      \centering
-      \caption{Caption here\label{tab:tablename}}
-      \begin{tabular}{l|cc}
-      \hline
-      \textbf{column 1} & \textbf{column 2} & \textbf{column 3} \\ \hline
-      Hello & Beamer & NAN \\ \hline
-      $\alpha+\beta$ & $\gamma+\eta$ & 34\% \\ \hline
+  \begin{table}[ht]
+    \centering
+  \fontsize{7.5pt}{11pt}\selectfont{
+      \begin{tabular}{ccccccccccc}
+        \hline
+        \multirow{2}{*}{Matrix} &
+              \multicolumn{2}{c}{\texttt{randQB\_EI}(Alg. 2)} & & \multicolumn{2}{c}{\texttt{svds}}& &\multicolumn{4}{c}{Adaptive PCA Framework} \\
+              \cline{2-3}
+              \cline{5-6}
+              \cline{8-11}
+              & time (s) & $k$ & & time (s) & $k^*$ & & time (s) & $k$ & Sp1 & Sp2\\
+        \hline
+        MovieLens-1M&3.83&118& &3.0&117& &{\bf 1.75}&118 & 1.8 & 1.7\\
+        hetrec2011&40.3&328& &71.8&325& &{\bf 29.1}&327 & 1.4 & 2.5\\
+        BookCrossing&2739&3012& &6758&3004& &{\bf 1004}&3014 & {\bf 2.8} & {\bf 6.7}\\
+        MovieLens-20M&1476&883& &3722&879& &{\bf 704}&883 & 2.1 & 5.3\\
+        \hline
       \end{tabular}
-      \end{table}
+  }
+  
+  \end{table}
 
 \end{frame}
 
@@ -155,20 +156,50 @@ label=python]
 \end{frame}
 
 \begin{frame}{算法}
+  
+
   \begin{algorithm}[H]
-    \caption{HOSVD}
-    \small 
-    \KwIn{HOSVD($\mathcal{X},R_{1},R_{2}.....R_{N}$) }
-    \KwOut{ $\mathcal{G},A_{(1)},A_{(2)}......A_{(N)} $ }
-    
-    \For{$k=1$ to $N$ }
-    {
-      $A_{(n)}\leftarrow R_{n}$left singular matrix of $X_{(n)}$
-    }
-    $\mathcal{G}=\leftarrow \mathcal{X} \times A_{(1)}^{T} \times A_{(2)}^{T}...... \times A_{(N)}^{T}$\\
-    \Return $\mathcal{G},A_{(1)},A_{(2)}......A_{(N)} $
-  \end{algorithm}
-  \end{frame}
+    \algsetup{linenosize=\tiny} \scriptsize
+  \begin{algorithmic}[1] %一行一个标行号
+    \REQUIRE $\mathbf{A}\in\mathbb{R}^{m\times n}$~$(m \le n)$, block size $b$, pass parameter $q > 2$
+    \ENSURE $\mathbf{U}\in\mathbb{R}^{m\times k}$, $\mathbf{S}\in\mathbb{R}^k$, $\mathbf{V}\in\mathbb{R}^{k\times n}$ for certain accuracy criterion
+%    \STATE $E=\left\|\mathbf{A}\right\|^2; ~ thresh=\varepsilon^2\times E$
+      \STATE $\mathbf{Q} = [~ ]$, ~ $\mathbf{B} = [~ ]$
+      \FOR {$l=1, 2, 3, \cdots$, }
+      \STATE \textbf{if} $q$ is an even number
+        \STATE \quad\quad$\bm{\Omega}=$ randn($n,b$),$\mathbf{Y}=\mathbf{A}\bm{\Omega}-\mathbf{Q}(\mathbf{B}\bm{\Omega})$
+        \STATE \quad\quad$[\mathbf{Q}_l, ~ \sim]=$lu($\mathbf{Y}$) \quad \quad \quad \quad \quad \quad \# LU factorization replaces QR factorization
+      \STATE \textbf{else} 
+        \STATE \quad\quad$\mathbf{Q}_l=$randn($m,b$) \quad \quad \quad \quad \quad \quad \# when $q$ is an odd number
+      \FOR {$t=1,2,\cdots,\lfloor\frac{q-1}{2}\rfloor$}
+        \STATE \textbf{if} $t==\lfloor\frac{q-1}{2}\rfloor$
+          \STATE \quad\quad$\mathbf{R}=\mathbf{A}^\mathrm{T}\mathbf{Q}_l$ \quad \quad \quad \quad \quad \quad \quad \# remove one orthogonalization 
+          \STATE \quad\quad$\mathbf{Q}_l= \mathrm{orth}(\mathbf{A}\mathbf{R}-\mathbf{Q}(\mathbf{B}\mathbf{R}))$ \quad \quad \# the last one in power iteration 
+        \STATE \textbf{else}
+          \STATE \quad\quad$[\mathbf{Q}_l, \sim] =$lu($\mathbf{A}(\mathbf{A}^\mathrm{T}\mathbf{Q}_l)$) \quad \quad \# LU factorization replaces QR factorization
+      \ENDFOR
+      \STATE $\mathbf{Q}_l = \mathrm{orth}(\mathbf{Q}_l-\mathbf{Q}(\mathbf{Q}^\mathrm{T}\mathbf{Q}_l)),\mathbf{B}_l=\mathbf{Q}_l^\mathrm{T}\mathbf{A}$
+      \STATE $\mathbf{Q}=\begin{bmatrix}\mathbf{Q}&\mathbf{Q}_l\end{bmatrix}, ~ \mathbf{B}=\begin{bmatrix}\mathbf{B}\\\mathbf{B}_l\end{bmatrix}$
+%      \IF {$E-\left\|\mathbf{B}_i\right\|^2<thresh$}
+%        \FOR {$j=1,2,\cdots,b$}
+%          \STATE $E = E - \left\|\mathbf{B}_{i}(j,:)\right\|^2$
+%          \STATE if $E<thresh$ then break
+%        \ENDFOR
+%        \STATE break
+%      \ENDIF
+%      \STATE $E=E-\left\|\mathbf{B}_i\right\|^2$
+    \STATE \textbf{if} {termination criterion is met}
+    \STATE \quad\quad$k$ is determined and then break
+    \ENDFOR
+%  \STATE $k=b\cdot i+j$
+  \STATE $[\mathbf{\hat{U}},\mathbf{\hat{S}},\mathbf{\hat{V}}] = \mathrm{eigSVD}(\mathbf{B^\mathrm{T}})$ \quad \quad \quad \quad \# use eigen-decomposition to compute SVD
+%  \STATE $\mathbf{U}=\mathbf{Q}\mathbf{\hat{U}}(:, 1:k); ~ \mathbf{S}=\mathbf{\hat{S}}(1:k); ~ \mathbf{V}=\mathbf{\hat{V}}(:, 1:k)$
+    \STATE $ind=lb:-1:lb-k+1$
+  \STATE $\mathbf{U}=\mathbf{Q}\mathbf{\hat{V}}(:, ind),  ~ \mathbf{S}=\mathbf{\hat{S}}(ind), ~ \mathbf{V}=\mathbf{\hat{U}}(:, ind)$
+	\end{algorithmic}
+\end{algorithm}
+
+\end{frame}
 
 \section{section3}
 \begin{frame}{研究方法与数据集特征}
